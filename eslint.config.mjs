@@ -1,14 +1,14 @@
 // @ts-check
 
-import eslint from "@eslint/js";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import globals from "globals";
-import { defineConfig } from "eslint/config";
-import tseslint from "typescript-eslint";
+import eslint from '@eslint/js';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
+import { defineConfig } from 'eslint/config';
+import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   {
-    ignores: ["dist/**", "node_modules/**", "eslint.config.mjs"],
+    ignores: ['dist/**', 'node_modules/**', 'eslint.config.mjs'],
   },
 
   eslint.configs.recommended,
@@ -23,7 +23,7 @@ export default defineConfig(
         ...globals.node,
       },
 
-      sourceType: "commonjs",
+      sourceType: 'commonjs',
 
       parserOptions: {
         projectService: true,
@@ -34,13 +34,13 @@ export default defineConfig(
 
   {
     rules: {
-      "@typescript-eslint/no-explicit-any": "off",
+      '@typescript-eslint/no-explicit-any': 'off',
 
-      "@typescript-eslint/no-floating-promises": "error",
+      '@typescript-eslint/no-floating-promises': 'error',
 
-      "@typescript-eslint/no-unsafe-argument": "warn",
+      '@typescript-eslint/no-unsafe-argument': 'warn',
 
-      "prettier/prettier": ["error", { endOfLine: "lf" }],
+      'prettier/prettier': ['error', { endOfLine: 'lf' }],
     },
   },
 );

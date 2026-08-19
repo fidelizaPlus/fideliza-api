@@ -64,8 +64,8 @@ npm install @prisma/adapter-mssql mssql
 ### PostgreSQL
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from '../generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -77,11 +77,11 @@ const prisma = new PrismaClient({ adapter });
 ### MySQL
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import { PrismaClient } from '../generated/client';
+import { PrismaMariaDb } from '@prisma/adapter-mariadb';
 
 const adapter = new PrismaMariaDb({
-  host: "localhost",
+  host: 'localhost',
   port: 3306,
   connectionLimit: 5,
   user: process.env.MYSQL_USER,
@@ -95,11 +95,11 @@ const prisma = new PrismaClient({ adapter });
 ### SQLite
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaClient } from '../generated/client';
+import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 const adapter = new PrismaBetterSqlite3({
-  url: process.env.DATABASE_URL || "file:./dev.db",
+  url: process.env.DATABASE_URL || 'file:./dev.db',
 });
 
 const prisma = new PrismaClient({ adapter });
@@ -108,8 +108,8 @@ const prisma = new PrismaClient({ adapter });
 ### Neon (Serverless PostgreSQL)
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from '../generated/client';
+import { PrismaNeon } from '@prisma/adapter-neon';
 
 const adapter = new PrismaNeon({
   connectionString: process.env.DATABASE_URL,
@@ -121,8 +121,8 @@ const prisma = new PrismaClient({ adapter });
 ### Prisma Postgres
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from '../generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -134,8 +134,8 @@ const prisma = new PrismaClient({ adapter });
 ### Prisma Postgres serverless driver
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaPostgresAdapter } from "@prisma/adapter-ppg";
+import { PrismaClient } from '../generated/client';
+import { PrismaPostgresAdapter } from '@prisma/adapter-ppg';
 
 const prisma = new PrismaClient({
   adapter: new PrismaPostgresAdapter({
@@ -147,13 +147,13 @@ const prisma = new PrismaClient({
 ### SQL Server
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaMssql } from "@prisma/adapter-mssql";
+import { PrismaClient } from '../generated/client';
+import { PrismaMssql } from '@prisma/adapter-mssql';
 
 const adapter = new PrismaMssql({
-  server: "localhost",
+  server: 'localhost',
   port: 1433,
-  database: "mydb",
+  database: 'mydb',
   user: process.env.SQLSERVER_USER,
   password: process.env.SQLSERVER_PASSWORD,
   options: {
@@ -172,7 +172,7 @@ Driver adapters use the underlying driver's pool settings, which differ from v6 
 ### PostgreSQL with custom pool
 
 ```typescript
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -211,7 +211,7 @@ const adapter = new PrismaPg({
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    ca: fs.readFileSync("/path/to/ca-cert.pem"),
+    ca: fs.readFileSync('/path/to/ca-cert.pem'),
     rejectUnauthorized: true,
   },
 });
@@ -222,7 +222,7 @@ const adapter = new PrismaPg({
 ### Before (v6)
 
 ```typescript
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient({
   datasources: {
@@ -234,8 +234,8 @@ const prisma = new PrismaClient({
 ### After (v7)
 
 ```typescript
-import { PrismaClient } from "../generated/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from '../generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -248,8 +248,8 @@ const prisma = new PrismaClient({ adapter });
 
 ```typescript
 // lib/prisma.ts
-import { PrismaClient } from "../generated/client";
-import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from '../generated/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -261,7 +261,7 @@ const adapter = new PrismaPg({
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
 }
 ```

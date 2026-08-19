@@ -74,11 +74,11 @@ bun add create-db
 Create a database:
 
 ```ts
-import { create, isDatabaseSuccess, isDatabaseError } from "create-db";
+import { create, isDatabaseSuccess, isDatabaseError } from 'create-db';
 
 const result = await create({
-  region: "us-east-1",
-  userAgent: "my-app/1.0.0",
+  region: 'us-east-1',
+  userAgent: 'my-app/1.0.0',
 });
 
 if (isDatabaseSuccess(result)) {
@@ -95,7 +95,7 @@ if (isDatabaseError(result)) {
 List regions programmatically:
 
 ```ts
-import { regions } from "create-db";
+import { regions } from 'create-db';
 
 const available = await regions();
 console.log(available);

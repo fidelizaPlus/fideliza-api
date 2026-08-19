@@ -100,9 +100,9 @@ datasource db {
 ```typescript
 export default defineConfig({
   datasource: {
-    url: env("DATABASE_URL"),
-    directUrl: env("DIRECT_URL"),
-    shadowDatabaseUrl: env("SHADOW_DATABASE_URL"),
+    url: env('DATABASE_URL'),
+    directUrl: env('DIRECT_URL'),
+    shadowDatabaseUrl: env('SHADOW_DATABASE_URL'),
   },
 });
 ```
@@ -118,7 +118,7 @@ export default defineConfig({
 2. Update imports throughout your codebase:
 
    ```typescript
-   import { PrismaClient } from "../generated/prisma/client";
+   import { PrismaClient } from '../generated/prisma/client';
    ```
 
 3. Update `.gitignore` if you manage this manually:
@@ -129,7 +129,7 @@ export default defineConfig({
 
 4. Replace `Prisma.validator()` with TypeScript `satisfies` when using `prisma-client`:
    ```typescript
-   import { Prisma } from "../generated/prisma/client";
+   import { Prisma } from '../generated/prisma/client';
 
    const userSelect = {
      id: true,

@@ -14,10 +14,10 @@ npm install @prisma/client @prisma/adapter-pg pg
 ## Basic instantiation
 
 ```typescript
-import "dotenv/config";
-import pg from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/prisma/client.js";
+import 'dotenv/config';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/prisma/client.js';
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -37,10 +37,10 @@ const prisma = new PrismaClient({ adapter });
 ## Usage in application code
 
 ```typescript
-import "dotenv/config";
-import pg from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/prisma/client.js";
+import 'dotenv/config';
+import pg from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/prisma/client.js';
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -48,7 +48,7 @@ const prisma = new PrismaClient({ adapter });
 
 // Create
 const user = await prisma.user.create({
-  data: { email: "alice@example.com", name: "Alice" },
+  data: { email: 'alice@example.com', name: 'Alice' },
 });
 
 // Read with relations

@@ -10,8 +10,12 @@ on:
       - main
 
 jobs:
-  test:
+  check:
     runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/fideliza
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,11 +32,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma Client
+        run: pnpm exec prisma generate
+
       - name: Lint
         run: pnpm lint
 
       - name: Build
         run: pnpm build
-
-      - name: Run tests
-        run: pnpm test

@@ -4,7 +4,7 @@ description: Required reference for Prisma ORM 7 SQL driver adapter work. Use wh
 license: MIT
 metadata:
   author: prisma
-  version: "7.9.1"
+  version: '7.9.1'
 ---
 
 # Prisma SQL Driver Adapter Implementation
@@ -70,8 +70,8 @@ interface Transaction extends AdapterInfo {
 
 ```typescript
 class ExampleQueryable {
-  readonly provider = "postgres" as const;
-  readonly adapterName = "@acme/adapter-example";
+  readonly provider = 'postgres' as const;
+  readonly adapterName = '@acme/adapter-example';
 
   constructor(protected readonly connection: DriverConnection) {}
 
@@ -80,7 +80,7 @@ class ExampleQueryable {
       const result = await this.connection.query({
         text: query.sql,
         values: query.args.map((value, index) => mapArg(value, query.argTypes[index])),
-        rowMode: "array",
+        rowMode: 'array',
       });
 
       return {
@@ -211,7 +211,7 @@ import {
   DriverAdapterError,
   type Error as DriverAdapterErrorObject,
   type MappedError,
-} from "@prisma/driver-adapter-utils";
+} from '@prisma/driver-adapter-utils';
 
 function convertDriverError(error: DatabaseError): DriverAdapterErrorObject {
   return {
@@ -222,13 +222,13 @@ function convertDriverError(error: DatabaseError): DriverAdapterErrorObject {
 }
 
 function mapKnownOrRaw(error: DatabaseError): MappedError {
-  if (error.code === "23505") {
-    return { kind: "UniqueConstraintViolation", constraint: parsedConstraint(error) };
+  if (error.code === '23505') {
+    return { kind: 'UniqueConstraintViolation', constraint: parsedConstraint(error) };
   }
   return {
-    kind: "postgres",
-    code: String(error.code ?? "N/A"),
-    severity: error.severity ?? "N/A",
+    kind: 'postgres',
+    code: String(error.code ?? 'N/A'),
+    severity: error.severity ?? 'N/A',
     message: error.message,
     detail: error.detail,
     column: error.column,
