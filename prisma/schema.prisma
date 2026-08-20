@@ -11,3 +11,214 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  MANAGER // Painel WEB
+  CLIENT // APP MOBILE
+}
+
+model User {
+  id                String             @id @default(uuid()) @db.Uuid
+  authUserId        String             @unique @db.Uuid
+  name              String
+  email             String             @unique
+  role              Role
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  profiles          Profile[]
+  campaigns         Campaign[]
+  campaignTargets   CampaignTarget[]
+  establishments    Establishment[]
+  purchases         Purchase[]
+  coupons           Coupon[]
+  points            Point[]
+  rewardRedemptions RewardRedemption[]
+
+  @@map("users")
+}
+
+model Profile {
+  id    String @id @default(uuid()) @db.Uuid
+  phone String
+  photo String
+
+  userId String @unique @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Campaign {
+  id          String    @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  status      String
+  startDate   DateTime  @default(now()) @map("start_date")
+  endDate     DateTime  @default(now()) @map("end_date")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  finishedAt  DateTime? @map("finished_at")
+
+  userId          String           @db.Uuid
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  campaignTargets CampaignTarget[]
+  coupons         Coupon[]
+  notifications   Notification[]
+
+  @@map("campaigns")
+}
+
+model CampaignTarget {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  campaignId String   @db.Uuid
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, campaignId])
+  @@map("campaign_targets")
+}
+
+model Notification {
+  id          String   @id @default(uuid()) @db.Uuid
+  description String
+  sentAt      DateTime @default(now()) @map("sent_at")
+
+  campaignId String   @db.Uuid
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Establishment {
+  id   String  @id @default(uuid()) @db.Uuid
+  name String
+  type String
+  logo String?
+
+  userId    String     @unique @db.Uuid
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address   Address?
+  purchases Purchase[]
+  points    Point[]
+  rewards   Reward[]
+
+  @@map("establishments")
+}
+
+model Address {
+  id           String @id @default(uuid()) @db.Uuid
+  street       String
+  number       String
+  neighborhood String
+  city         String
+  state        String
+  zipCode      String
+
+  establishmentId String        @unique @db.Uuid
+  establishment   Establishment @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Purchase {
+  id           String   @id @default(uuid()) @db.Uuid
+  amount       Decimal  @db.Decimal(10, 2)
+  pointsEarned Int      @map("points_earned")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  establishmentId String          @db.Uuid
+  establishment   Establishment   @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  historyPoints   HistoryPoints[]
+
+  @@map("purchases")
+}
+
+model Coupon {
+  id            String    @id @default(uuid()) @db.Uuid
+  code          String    @unique
+  discountValue Decimal   @db.Decimal(10, 2)
+  status        String
+  createdAt     DateTime  @default(now()) @map("created_at")
+  validUntil    DateTime? @map("valid_until")
+  usedAt        DateTime? @map("used_at")
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  campaignId String   @db.Uuid
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@map("coupons")
+}
+
+model Point {
+  id        String   @id @default(uuid()) @db.Uuid
+  points    Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  establishmentId String          @db.Uuid
+  establishment   Establishment   @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  historyPoints   HistoryPoints[]
+
+  @@unique([userId, establishmentId])
+  @@map("points")
+}
+
+model HistoryPoints {
+  id        String   @id @default(uuid()) @db.Uuid
+  amount    Int
+  type      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  pointsId String @db.Uuid
+  points   Point  @relation(fields: [pointsId], references: [id], onDelete: Cascade)
+
+  rewardId String? @db.Uuid
+  reward   Reward? @relation(fields: [rewardId], references: [id], onDelete: SetNull)
+
+  purchaseId String?   @db.Uuid
+  purchase   Purchase? @relation(fields: [purchaseId], references: [id], onDelete: SetNull)
+
+  @@map("history_points")
+}
+
+model Reward {
+  id             String    @id @default(uuid()) @db.Uuid
+  title          String
+  pointsRequired Int
+  createdAt      DateTime  @default(now()) @map("created_at")
+  validUntil     DateTime?
+
+  establishmentId   String             @db.Uuid
+  establishment     Establishment      @relation(fields: [establishmentId], references: [id], onDelete: Cascade)
+  rewardRedemptions RewardRedemption[]
+  historyPoints     HistoryPoints[]
+
+  @@map("rewards")
+}
+
+model RewardRedemption {
+  id        String    @id @default(uuid()) @db.Uuid
+  code      String    @unique
+  status    String
+  createdAt DateTime  @default(now()) @map("created_at")
+  usedAt    DateTime? @map("used_at")
+
+  rewardId String @db.Uuid
+  reward   Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("reward_redemptions")
+}
