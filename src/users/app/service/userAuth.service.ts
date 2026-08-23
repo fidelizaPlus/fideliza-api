@@ -37,6 +37,12 @@ export class AuthService {
       email,
       password,
       email_confirm: true,
+      user_metadata: {
+        name,
+      },
+      app_metadata: {
+        role,
+      },
     });
 
     if (authError || !authData.user) {
