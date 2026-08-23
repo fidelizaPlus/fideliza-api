@@ -11,7 +11,7 @@ export interface CreateUserData {
 export interface IUserRepository {
   createUser(data: CreateUserData): Promise<User>;
   findUserById(id: string): Promise<User | null>;
-  findUserByAuthUserId(id: string): Promise<User | null>;
+  findUserByAuthUserId(authUserId: string): Promise<User | null>;
   findUserByName(name: string): Promise<User | null>;
   findUserByEmail(email: string): Promise<User | null>;
   deleteUser(id: string): Promise<void>;

@@ -1,4 +1,3 @@
-import { InvalidEmail } from '@/Error/invalid-email';
 import { z } from 'zod';
 
 export const nameSchema = z
@@ -8,14 +7,25 @@ export const nameSchema = z
   .max(100, 'Name is too long')
   .regex(/^[\p{L}\p{M}]+(?:[ '-][\p{L}\p{M}]+)*$/u, 'Invalid name');
 
-export const registerUserSchema = z.object({
+const userBaseSchema = z.object({
   name: nameSchema,
-  email: z.email(new InvalidEmail()).trim().toLowerCase(),
+  email: z.email('Invalid email').trim().toLowerCase(),
 });
+
+export const registerUserSchema = userBaseSchema
+  .extend({
+    password: z.string().min(9, 'Password must have at least 9 characters'),
+
+    passwordConfirmation: z.string(),
+  })
+  .refine((data) => data.password === data.passwordConfirmation, {
+    message: 'Passwords do not match',
+    path: ['passwordConfirmation'],
+  });
 
 export type RegisterUserInput = z.infer<typeof registerUserSchema>;
 
-export const createUserSchema = registerUserSchema.extend({
+export const createUserSchema = userBaseSchema.extend({
   authUserId: z.uuid('Invalid authentication user ID'),
 });
 

@@ -5,6 +5,12 @@ import { registerUserSchema } from '../validation/create-user.schema';
 import type { RegisterUserInput } from '../validation/create-user.schema';
 import { EmailAlreadyExists } from '@/Error/email-already-exists';
 import { Role } from '@/users/domain/enum/user.enum';
+import { supabaseAdmin } from '@/infra/supabase/createClient';
+import { InformEmail } from '@/Error/email-inform';
+import { InformPassword } from '@/Error/password-inform';
+import { InvalidPassword } from '@/Error/invalid-password';
+import { InvalidPasswordLength } from '@/Error/invalid-password-length';
+import { InvalidEmail } from '@/Error/invalid-email';
 
 @Injectable()
 export class AuthService {
@@ -14,24 +20,43 @@ export class AuthService {
   ) {}
 
   async register(data: RegisterUserInput) {
+    if (data.email.trim() === '') throw new InformEmail();
+    if (!data.email.includes('@')) throw new InvalidEmail();
+    if (data.password.trim() === '') throw new InformPassword();
+    if (data.password !== data.passwordConfirmation) throw new InvalidPassword();
+    if (data.password.length < 9) throw new InvalidPasswordLength();
+
     const validationData = registerUserSchema.parse(data);
+    const { name, email, password } = validationData;
 
-    const name = validationData.name;
-    const email = validationData.email;
-
-    // verifying if already has an e-mail
     const userEmail = await this.userRepository.findUserByEmail(email);
 
-    if (userEmail) throw new EmailAlreadyExists();
+    if (userEmail) {
+      throw new EmailAlreadyExists();
+    }
 
-    // save in db
-    const user = await this.userRepository.createUser({
-      name: name,
-      email: email,
-      authUserId: '', // !todo falta integrar o supabase
-      role: Role.MANAGER,
+    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
     });
 
-    return { user };
+    if (authError || !authData.user) {
+      throw new Error(authError?.message ?? 'Could not create authentication user');
+    }
+
+    try {
+      const user = await this.userRepository.createUser({
+        name,
+        email,
+        authUserId: authData.user.id,
+        role: Role.MANAGER,
+      });
+
+      return { user };
+    } catch (error) {
+      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+      throw error;
+    }
   }
 }
