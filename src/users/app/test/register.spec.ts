@@ -1,11 +1,12 @@
-import { InformPassword } from '@/Error/password-inform';
+import { InformPassword } from '@/users/app/Error/password-inform';
+import { InformEmail } from '@/users/app/Error/email-inform';
+import { InvalidPassword } from '@/users/app/Error/invalid-password';
+import { InvalidPasswordLength } from '@/users/app/Error/invalid-password-length';
+import { InvalidEmail } from '@/users/app/Error/invalid-email';
+import { UserAlreadyExist } from '@/users/app/Error/user-already-exist';
 import { AuthService } from '../service/userAuth.service';
+import { UserService } from '../service/users.service';
 import { InMemoryUserRepository } from './in-memory/in-memory-user-repository';
-import { EmailAlreadyExists } from '@/Error/email-already-exists';
-import { InformEmail } from '@/Error/email-inform';
-import { InvalidPassword } from '@/Error/invalid-password';
-import { InvalidPasswordLength } from '@/Error/invalid-password-length';
-import { InvalidEmail } from '@/Error/invalid-email';
 
 vi.mock('@/infra/supabase/createClient', () => ({
   supabaseAdmin: {
@@ -29,54 +30,54 @@ vi.mock('@/infra/supabase/createClient', () => ({
   },
 }));
 
-describe('register test', () => {
+describe('register client test', () => {
   let userRepository: InMemoryUserRepository;
+  let userService: UserService;
   let sut: AuthService;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
-    sut = new AuthService(userRepository);
+    userService = new UserService(userRepository);
+    sut = new AuthService(userService);
   });
 
-  it('should be able to register a new user', async () => {
-    const { user } = await sut.register({
+  it('should be able to register a new client', async () => {
+    const { user } = await sut.registerClient({
       name: 'John Doe',
       email: 'johndoe@gmail.com',
       password: '123456789',
       passwordConfirmation: '123456789',
     });
 
-    const id = '550e8400-e29b-41d4-a716-446655440000';
-
     expect(user.name).toBe('John Doe');
     expect(user.email).toBe('johndoe@gmail.com');
-    expect(user.authUserId).toBe(id);
+    expect(user.authUserId).toBe('550e8400-e29b-41d4-a716-446655440000');
     expect(userRepository.items).toHaveLength(1);
   });
 
   it('should throw UserAlreadyExist if email already exists', async () => {
     const email = 'johndoe@gmail.com';
 
-    await sut.register({
+    await sut.registerClient({
       name: 'John Doe',
-      email: email,
+      email,
       password: '123456789',
       passwordConfirmation: '123456789',
     });
 
     await expect(
-      sut.register({
+      sut.registerClient({
         name: 'John Doe',
-        email: email,
+        email,
         password: '123456789',
         passwordConfirmation: '123456789',
       }),
-    ).rejects.toBeInstanceOf(EmailAlreadyExists);
+    ).rejects.toBeInstanceOf(UserAlreadyExist);
   });
 
   it('should throw InformEmail', async () => {
     await expect(
-      sut.register({
+      sut.registerClient({
         name: 'John Doe',
         email: '',
         password: '123456789',
@@ -87,8 +88,8 @@ describe('register test', () => {
 
   it('should throw InformPassword', async () => {
     await expect(
-      sut.register({
-        name: 'Joe Doe',
+      sut.registerClient({
+        name: 'John Doe',
         email: 'johndoe@gmail.com',
         password: '',
         passwordConfirmation: '',
@@ -98,7 +99,7 @@ describe('register test', () => {
 
   it('should throw InvalidPassword', async () => {
     await expect(
-      sut.register({
+      sut.registerClient({
         name: 'John Doe',
         email: 'johndoe@gmail.com',
         password: '123456789',
@@ -109,7 +110,7 @@ describe('register test', () => {
 
   it('should throw InvalidPasswordLength', async () => {
     await expect(
-      sut.register({
+      sut.registerClient({
         name: 'John Doe',
         email: 'johndoe@gmail.com',
         password: '12345678',
@@ -118,9 +119,9 @@ describe('register test', () => {
     ).rejects.toBeInstanceOf(InvalidPasswordLength);
   });
 
-  it('should not accept e-mail without "@"', async () => {
+  it('should not accept email without "@"', async () => {
     await expect(
-      sut.register({
+      sut.registerClient({
         name: 'John Doe',
         email: 'johndoegmail.com',
         password: '123456789',
@@ -129,8 +130,8 @@ describe('register test', () => {
     ).rejects.toBeInstanceOf(InvalidEmail);
   });
 
-  it('should store the user in the repository after registration', async () => {
-    await sut.register({
+  it('should store the client in the repository after registration', async () => {
+    await sut.registerClient({
       name: 'John Doe',
       email: 'johndoe@gmail.com',
       password: '123456789',

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { UserNotFound } from '@/Error/user-not-found';
+import { UserNotFound } from '@/users/app/Error/user-not-found';
 import { User } from '@/users/domain/entity/user.entity';
 import { CreateUserData, IUserRepository } from '@/users/domain/interface/user.interface';
 import { randomUUID } from 'crypto';

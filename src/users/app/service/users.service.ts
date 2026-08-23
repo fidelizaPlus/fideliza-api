@@ -4,7 +4,7 @@ import type { CreateUserInput } from '@/users/domain/interface/createUserInput.i
 import { USER_REPOSITORY } from '@/users/domain/interface/user.interface';
 import type { IUserRepository } from '@/users/domain/interface/user.interface';
 import { Inject, Injectable } from '@nestjs/common';
-import { UserAlreadyExist } from '@/Error/user-already-exist';
+import { UserAlreadyExist } from '@/users/app/Error/user-already-exist';
 
 @Injectable()
 export class UserService {
