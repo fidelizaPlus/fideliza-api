@@ -1,26 +1,28 @@
 import { USER_REPOSITORY } from '@/users/domain/interface/user.interface';
 import type { IUserRepository } from '@/users/domain/interface/user.interface';
-import { BadGatewayException, Inject } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserNotFound } from '../Error/user-not-found';
-import { supabaseAdmin } from '@/infra/supabase/createClient';
+import { Role } from '@/users/domain/enum/user.enum';
+import { AUTH_PROVIDER } from '@/users/domain/interface/authProvider';
+import type { IAuthProvider } from '@/users/domain/interface/authProvider';
 
+@Injectable()
 export class DeleteUserService {
   constructor(
     @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
+
+    @Inject(AUTH_PROVIDER)
+    private readonly authProvider: IAuthProvider,
   ) {}
 
-  async delete(id: string): Promise<void> {
-    const user = await this.userRepository.findUserByAuthUserId(id);
+  async delete(id: string, expectedRole: Role): Promise<void> {
+    const user = await this.userRepository.findUserById(id);
 
-    if (!user) throw new UserNotFound();
+    if (!user || user.role !== expectedRole) throw new UserNotFound();
 
     // deleting from supabase
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(user.authUserId);
-
-    if (error) {
-      throw new BadGatewayException(`Could not delete user from Supabase: ${error.message}`);
-    }
+    await this.authProvider.deleteAuthUser(user.authUserId);
 
     // deleting from database
     await this.userRepository.deleteUser(user.id);

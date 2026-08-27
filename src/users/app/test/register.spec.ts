@@ -7,38 +7,28 @@ import { UserAlreadyExist } from '@/users/app/Error/user-already-exist';
 import { AuthService } from '../service/userAuth.service';
 import { UserService } from '../service/users.service';
 import { InMemoryUserRepository } from './in-memory/in-memory-user-repository';
-
-vi.mock('@/infra/supabase/createClient', () => ({
-  supabaseAdmin: {
-    auth: {
-      admin: {
-        createUser: vi.fn().mockResolvedValue({
-          data: {
-            user: {
-              id: '550e8400-e29b-41d4-a716-446655440000',
-            },
-          },
-          error: null,
-        }),
-
-        deleteUser: vi.fn().mockResolvedValue({
-          data: {},
-          error: null,
-        }),
-      },
-    },
-  },
-}));
+import type { IAuthProvider } from '@/users/domain/interface/authProvider';
 
 describe('register client test', () => {
   let userRepository: InMemoryUserRepository;
   let userService: UserService;
+  let authProvider: IAuthProvider;
   let sut: AuthService;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
     userService = new UserService(userRepository);
-    sut = new AuthService(userService);
+    authProvider = {
+      createAuthUser: vi.fn().mockResolvedValue({
+        id: '550e8400-e29b-41d4-a716-446655440000',
+      }),
+      deleteAuthUser: vi.fn().mockResolvedValue(undefined),
+      signIn: vi.fn(),
+      signOut: vi.fn(),
+      refreshToken: vi.fn(),
+      verifyToken: vi.fn(),
+    };
+    sut = new AuthService(userService, authProvider);
   });
 
   it('should be able to register a new client', async () => {

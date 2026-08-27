@@ -1,18 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { registerUserSchema } from '../validation/create-user.schema';
 import type { RegisterUserInput } from '../validation/create-user.schema';
 import { Role } from '@/users/domain/enum/user.enum';
-import { supabaseAdmin } from '@/infra/supabase/createClient';
 import { InformEmail } from '@/users/app/Error/email-inform';
 import { InformPassword } from '@/users/app/Error/password-inform';
 import { InvalidPassword } from '@/users/app/Error/invalid-password';
 import { InvalidPasswordLength } from '@/users/app/Error/invalid-password-length';
 import { InvalidEmail } from '@/users/app/Error/invalid-email';
 import { UserService } from './users.service';
+import { AUTH_PROVIDER } from '@/users/domain/interface/authProvider';
+import type { IAuthProvider } from '@/users/domain/interface/authProvider';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+
+    @Inject(AUTH_PROVIDER)
+    private readonly authProvider: IAuthProvider,
+  ) {}
 
   async registerClient(data: RegisterUserInput) {
     return this.register(data, Role.CLIENT);
@@ -33,27 +39,13 @@ export class AuthService {
     const { name, email, password } = validationData;
 
     // create auth on supabase
-    const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        name,
-      },
-      app_metadata: {
-        role,
-      },
-    });
-
-    if (authError || !authData.user) {
-      throw new Error(authError?.message ?? 'Could not create authentication user');
-    }
+    const authData = await this.authProvider.createAuthUser({ name, email, password, role });
 
     // 2. Agora temos o authUserId
     const createUserData = {
       name,
       email,
-      authUserId: authData.user.id,
+      authUserId: authData.id,
     };
 
     try {
@@ -64,7 +56,7 @@ export class AuthService {
 
       return { user };
     } catch (error) {
-      await supabaseAdmin.auth.admin.deleteUser(authData.user.id);
+      await this.authProvider.deleteAuthUser(authData.id);
       throw error;
     }
   }

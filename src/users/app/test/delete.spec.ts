@@ -30,7 +30,9 @@ describe('delete user', () => {
     });
 
     userRepository = new InMemoryUserRepository();
-    sut = new DeleteUserService(userRepository);
+    sut = new DeleteUserService(userRepository, {
+      deleteAuthUser: deleteUserMock,
+    } as unknown as ConstructorParameters<typeof DeleteUserService>[1]);
   });
 
   it('should delete an existing user', async () => {
@@ -41,14 +43,16 @@ describe('delete user', () => {
       role: Role.CLIENT,
     });
 
-    await sut.delete(user.authUserId);
+    await sut.delete(user.id, Role.CLIENT);
 
     expect(userRepository.items).toHaveLength(0);
     expect(deleteUserMock).toHaveBeenCalledWith(user.authUserId);
   });
 
   it('should throw UserNotFound when user ID does not exist', async () => {
-    await expect(sut.delete('non-existent-user-id')).rejects.toBeInstanceOf(UserNotFound);
+    await expect(sut.delete('non-existent-user-id', Role.CLIENT)).rejects.toBeInstanceOf(
+      UserNotFound,
+    );
   });
 
   it('should not affect other users when deleting one', async () => {
@@ -71,7 +75,7 @@ describe('delete user', () => {
       },
     );
 
-    await sut.delete('auth-user-1');
+    await sut.delete('user-1', Role.CLIENT);
 
     expect(userRepository.items).toHaveLength(1);
     expect(userRepository.items[0].id).toBe('user-2');
