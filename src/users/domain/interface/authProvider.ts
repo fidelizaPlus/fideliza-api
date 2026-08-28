@@ -40,6 +40,8 @@ export interface IAuthProvider {
 
   signOut(accessToken: string): Promise<void>;
 
+  changeEmail(authUserId: string, email: string): Promise<void>;
+
   refreshToken(refreshToken: string): Promise<AuthSession>;
 
   verifyToken(token: string): Promise<AuthenticatedUser>;

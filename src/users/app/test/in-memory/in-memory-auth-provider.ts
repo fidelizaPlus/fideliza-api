@@ -58,6 +58,14 @@ export class InMemoryAuthProvider implements IAuthProvider {
     this.signedOutTokens.push(accessToken);
   }
 
+  async changeEmail(authUserId: string, email: string) {
+    const user = this.items.find((item) => item.id === authUserId);
+
+    if (!user) throw new UserNotFound();
+
+    user.email = email;
+  }
+
   async refreshToken(refreshToken: string) {
     const sessionIndex = this.sessions.findIndex(
       (session) => session.refreshToken === refreshToken,

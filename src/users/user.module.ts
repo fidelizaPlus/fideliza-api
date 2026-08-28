@@ -18,6 +18,8 @@ import { SignInService } from './app/service/signin.service';
 import { SignOutService } from './app/service/signout.service';
 import { RefreshTokenService } from './app/service/refreshToken.service';
 import { RefreshTokenController } from './presentation/controllers/auth/refreshToken.controller';
+import { UpdateUsersService } from './app/service/updateUsers.service';
+import { UpdateUsersController } from './presentation/controllers/user/updateUsers.controller';
 
 @Module({
   imports: [PrismaModule],
@@ -29,6 +31,7 @@ import { RefreshTokenController } from './presentation/controllers/auth/refreshT
     SignInService,
     SignOutService,
     RefreshTokenService,
+    UpdateUsersService,
     {
       provide: USER_REPOSITORY,
       useClass: UserRepository,
@@ -46,6 +49,7 @@ import { RefreshTokenController } from './presentation/controllers/auth/refreshT
     LoginController,
     SignOutController,
     RefreshTokenController,
+    UpdateUsersController,
   ],
 
   exports: [UserService],

@@ -33,6 +33,14 @@ export class SupabaseAuthProvider implements IAuthProvider {
       throw new UnauthorizedException(authError?.message ?? 'Not possible to sign out');
   }
 
+  async changeEmail(authUserId: string, email: string) {
+    const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(authUserId, {
+      email,
+    });
+
+    if (authError) throw new Error(authError.message);
+  }
+
   async createAuthUser(data: CreateAuthUserInput) {
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
