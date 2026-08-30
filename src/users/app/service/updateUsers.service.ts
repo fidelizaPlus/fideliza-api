@@ -20,12 +20,23 @@ export class UpdateUsersService {
 
     if (!user) throw new UserNotFound();
 
-    if (data.email && data.email !== user.email) {
-      await this.authProvider.changeEmail(user.authUserId, data.email);
-    }
-
     const userName = data.name ?? user.name;
     const userEmail = data.email ?? user.email;
+
+    if (data.email && data.email !== user.email) {
+      await this.authProvider.changeEmail(user.authUserId, data.email);
+
+      try {
+        return await this.userRepository.updateUser({
+          ...user,
+          name: userName,
+          email: userEmail,
+        });
+      } catch (error) {
+        await this.authProvider.changeEmail(user.authUserId, user.email);
+        throw error;
+      }
+    }
 
     return this.userRepository.updateUser({
       ...user,

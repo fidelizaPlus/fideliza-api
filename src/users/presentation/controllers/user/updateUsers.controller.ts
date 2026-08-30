@@ -12,6 +12,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '../../guards/auth/auth.guard';
 import type { AuthenticatedRequest } from '../../interfaces/authenticatedRequest.interface';
+import { UpdateUserDTO } from '../dto/updateUserDTO';
 
 @ApiTags('Users')
 @ApiBearerAuth('access-token')
@@ -26,25 +27,15 @@ export class UpdateUsersController {
     description: 'Updates one or more editable fields of an existing user',
   })
   @ApiBody({
-    description: 'Fields to update.',
-    schema: {
-      type: 'object',
-      properties: {
-        name: { type: 'string', example: 'John Doe' },
-        email: { type: 'string', format: 'email', example: 'john@gmail.com' },
-      },
-      minProperties: 1,
-    },
+    description: 'Fields to update',
+    type: UpdateUserDTO,
   })
   @ApiBadRequestResponse({ description: 'The request contains invalid data.' })
   @ApiNotFoundResponse({ description: 'User not found.' })
   @ApiUnauthorizedResponse({ description: 'Token not provided, invalid, or expired' })
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ description: 'User updated successfully.' })
-  async updateUsers(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: { name?: string; email?: string },
-  ) {
+  async updateUsers(@Req() req: AuthenticatedRequest, @Body() data: UpdateUserDTO) {
     const updatedUser = await this.updateUserService.update(req.user.id, data);
 
     return {

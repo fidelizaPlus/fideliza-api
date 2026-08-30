@@ -1,4 +1,6 @@
-export class InvalidEmail extends Error {
+import { BadRequestException } from '@nestjs/common';
+
+export class InvalidEmail extends BadRequestException {
   constructor() {
     super('Invalid e-mail');
   }
