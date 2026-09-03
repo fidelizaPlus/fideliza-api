@@ -16,7 +16,7 @@ export class DeleteUserService {
     private readonly authProvider: IAuthProvider,
   ) {}
 
-  async delete(id: string, expectedRole: Role): Promise<void> {
+  async delete(id: string, expectedRole: Role) {
     const user = await this.userRepository.findUserById(id);
 
     if (!user || user.role !== expectedRole) throw new UserNotFound();

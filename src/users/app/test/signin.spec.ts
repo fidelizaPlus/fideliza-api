@@ -72,7 +72,7 @@ describe('sign in', () => {
     ).rejects.toBeInstanceOf(FailedSignIn);
   });
 
-  it('hould not sign in when the user does not exist', async () => {
+  it('should not sign in when the user does not exist', async () => {
     await expect(
       sut.signin({
         email: 'unknown@gmail.com',

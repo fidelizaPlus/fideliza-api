@@ -40,6 +40,14 @@ describe('update an user', () => {
     expect(updatedUser.email).toBe('john@gmail.com');
   });
 
+  it('should update user name', async () => {
+    const updatedUser = await sut.update(user.id, {
+      name: 'Carlos',
+    });
+
+    expect(updatedUser.name).toBe('Carlos');
+  });
+
   it('should throw an error if id does not exist', async () => {
     await expect(
       sut.update('invalid-id', {
@@ -67,4 +75,6 @@ describe('update an user', () => {
 
     expect(authUser?.email).toBe('john@gmail.com');
   });
+
+  // !TODO: Fazer teste roolback
 });

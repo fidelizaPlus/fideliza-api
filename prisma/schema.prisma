@@ -9,8 +9,16 @@ datasource db {
 }
 
 enum Role {
-  MANAGER // Painel WEB
-  CLIENT // APP MOBILE
+  MANAGER
+  CLIENT
+}
+
+enum Status {
+  DRAFT
+  SCHEDULED
+  ACTIVE
+  FINISHED
+  CANCELLED
 }
 
 model User {
@@ -48,15 +56,16 @@ model Campaign {
   id          String    @id @default(uuid()) @db.Uuid
   title       String
   description String
-  status      String
+  status      Status    @default(DRAFT)
+  createdAt   DateTime  @default(now()) @map("created_at")
   startDate   DateTime  @default(now()) @map("start_date")
-  endDate     DateTime  @default(now()) @map("end_date")
+  endDate     DateTime  @map("end_date")
   updatedAt   DateTime  @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
   finishedAt  DateTime? @map("finished_at")
 
-  userId          String           @db.Uuid
-  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  managerId       String           @db.Uuid
+  user            User             @relation(fields: [managerId], references: [id], onDelete: Cascade)
   campaignTargets CampaignTarget[]
   coupons         Coupon[]
   notifications   Notification[]
