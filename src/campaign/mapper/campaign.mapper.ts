@@ -1,4 +1,5 @@
 import { Campaign as DomainCampaign } from '@/campaign/domain/entity/campaign.entity';
+import { Status } from '@/campaign/domain/enum/status.enum';
 import { Campaign as PrismaCampaign } from 'generated/prisma/client';
 
 export class CampaignMapper {
@@ -8,7 +9,7 @@ export class CampaignMapper {
       campaign.managerId,
       campaign.title,
       campaign.description,
-      campaign.status,
+      Status[campaign.status],
       campaign.startDate,
       campaign.endDate,
       campaign.createdAt,

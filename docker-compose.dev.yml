@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      target: development
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: dev
+      TSC_WATCHFILE: DynamicPriorityPolling
+    volumes:
+      - ./src:/app/src
+      - ./prisma:/app/prisma
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./tsconfig.build.json:/app/tsconfig.build.json
+      - ./nest-cli.json:/app/nest-cli.json
+    command:
+      - sh
+      - -c
+      - pnpm prisma generate && pnpm prisma migrate deploy && pnpm start:dev

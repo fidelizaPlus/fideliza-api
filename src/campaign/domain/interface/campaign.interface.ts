@@ -15,6 +15,8 @@ export interface ICampaignRepository {
   findCampaignById(id: string): Promise<Campaign | null>;
   findCampaignByTitle(title: string): Promise<Campaign | null>;
   findCampaignByManager(managerId: string): Promise<Campaign[]>;
+  findExpiredActiveCampaigns(now: Date): Promise<Campaign[]>;
+  finishCampaignIfExpired(id: string, now: Date): Promise<boolean>;
   updateCampaign(campaign: Campaign): Promise<Campaign>;
   deleteCampaign(id: string): Promise<void>;
 }

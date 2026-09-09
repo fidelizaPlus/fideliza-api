@@ -4,6 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './shared/prisma/prismaService.module';
 import { UserModule } from './users/user.module';
 import { HealthModule } from './health/health.module';
+import { CampaignModule } from './campaign/campaign.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -12,9 +14,11 @@ import { HealthModule } from './health/health.module';
       envFilePath: ['.env'],
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     PrismaModule,
     UserModule,
     HealthModule,
+    CampaignModule,
   ],
 })
 export class AppModule {}

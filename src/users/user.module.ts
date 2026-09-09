@@ -52,6 +52,6 @@ import { UpdateUsersController } from './presentation/controllers/user/updateUse
     UpdateUsersController,
   ],
 
-  exports: [UserService],
+  exports: [UserService, USER_REPOSITORY, AUTH_PROVIDER, AuthGuard],
 })
 export class UserModule {}

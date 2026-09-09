@@ -1,7 +1,7 @@
 # ---------- Stage 1: builder ----------
 FROM node:22-alpine AS builder
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 
 WORKDIR /app
 
@@ -15,13 +15,21 @@ COPY . .
 ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 
 RUN pnpm prisma generate
-
 RUN pnpm build
 
-# ---------- Stage 2: production ----------
+# ---------- Stage 2: development ----------
+FROM builder AS development
+
+ENV NODE_ENV=dev
+
+EXPOSE 3001
+
+CMD ["pnpm", "start:dev"]
+
+# ---------- Stage 3: production ----------
 FROM node:22-alpine AS production
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 
 WORKDIR /app
 
@@ -39,6 +47,6 @@ COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY entrypoint.sh ./
 RUN chmod +x entrypoint.sh
 
-EXPOSE 3000
+EXPOSE 3001
 
 ENTRYPOINT ["./entrypoint.sh"]

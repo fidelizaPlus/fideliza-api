@@ -10,6 +10,7 @@ import { CampaignMapper } from '@/campaign/mapper/campaign.mapper';
 @Injectable()
 export class CampaignRepository implements ICampaignRepository {
   constructor(private readonly prisma: PrismaService) {}
+
   async createCampaign(data: CreateCampaignData): Promise<DomainCampaign> {
     const campaign = await this.prisma.campaign.create({
       data: {
@@ -53,6 +54,46 @@ export class CampaignRepository implements ICampaignRepository {
     });
 
     return campaign.map((campaign) => CampaignMapper.toDomain(campaign));
+  }
+
+  async findExpiredActiveCampaigns(now: Date): Promise<DomainCampaign[]> {
+    const campaigns = await this.prisma.campaign.findMany({
+      where: {
+        status: 'ACTIVE',
+        endDate: {
+          lte: now,
+        },
+      },
+    });
+
+    return campaigns.map((campaign) => CampaignMapper.toDomain(campaign));
+  }
+
+  async finishCampaignIfExpired(id: string, now: Date): Promise<boolean> {
+    const campaign = await this.prisma.campaign.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!campaign) return false;
+
+    const result = await this.prisma.campaign.updateMany({
+      where: {
+        id,
+        status: 'ACTIVE',
+        endDate: {
+          lte: now,
+          equals: campaign.endDate,
+        },
+      },
+      data: {
+        status: 'FINISHED',
+        finishedAt: campaign.endDate,
+      },
+    });
+
+    return result.count > 0;
   }
 
   async updateCampaign(campaign: DomainCampaign): Promise<DomainCampaign> {
