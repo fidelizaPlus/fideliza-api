@@ -11,6 +11,8 @@ import { UpdateCampaignController } from './presentation/controllers/campaign/up
 import { DeleteCampaignController } from './presentation/controllers/campaign/deleteCampaign.controller';
 import { FinishExpiredCampaignService } from './app/services/finishExpiredCampaigns.service';
 import { FinishExpiredCampaignsJob } from './infra/jobs/finishedExpiredCampaigns.job';
+import { ListCampaignService } from './app/services/listCampaign.service';
+import { ListCampaignController } from './presentation/controllers/campaign/listCampaigns.controller';
 
 @Module({
   imports: [PrismaModule, UserModule],
@@ -20,12 +22,18 @@ import { FinishExpiredCampaignsJob } from './infra/jobs/finishedExpiredCampaigns
     DeleteCampaignService,
     FinishExpiredCampaignService,
     FinishExpiredCampaignsJob,
+    ListCampaignService,
     {
       provide: CAMPAIGN_REPOSITORY,
       useClass: CampaignRepository,
     },
   ],
-  controllers: [CampaignController, UpdateCampaignController, DeleteCampaignController],
+  controllers: [
+    CampaignController,
+    UpdateCampaignController,
+    DeleteCampaignController,
+    ListCampaignController,
+  ],
   exports: [CreateCampaignService, UpdateCampaignService, DeleteCampaignService],
 })
 export class CampaignModule {}

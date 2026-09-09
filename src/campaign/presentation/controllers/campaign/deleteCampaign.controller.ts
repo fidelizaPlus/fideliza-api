@@ -36,6 +36,9 @@ export class DeleteCampaignController {
   @ApiOkResponse({ description: 'Campaign deleted successfully.' })
   @HttpCode(HttpStatus.OK)
   async delete(@Param('id') id: string, @Req() request: AuthenticatedRequest) {
-    return this.deleteCampaignService.campaignDelete(id, request.user.id);
+    await this.deleteCampaignService.campaignDelete(id, request.user.id);
+    return {
+      message: 'Campaign deleted successfully.',
+    };
   }
 }
