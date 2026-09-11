@@ -6,6 +6,7 @@ import type {
 import { PrismaService } from '@/shared/prisma/prisma.service';
 import { Campaign as DomainCampaign } from '../domain/entity/campaign.entity';
 import { CampaignMapper } from '@/campaign/mapper/campaign.mapper';
+import { Status } from '../domain/enum/status.enum';
 
 @Injectable()
 export class CampaignRepository implements ICampaignRepository {
@@ -110,6 +111,19 @@ export class CampaignRepository implements ICampaignRepository {
     });
 
     return CampaignMapper.toDomain(updatedCampaign);
+  }
+
+  async updateCampaignStatus(campaignId: string, status: Status): Promise<DomainCampaign> {
+    const updatedStatus = await this.prisma.campaign.update({
+      where: {
+        id: campaignId,
+      },
+      data: {
+        status: status,
+      },
+    });
+
+    return CampaignMapper.toDomain(updatedStatus);
   }
 
   async deleteCampaign(id: string): Promise<void> {

@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Patch,
   Req,
   UseGuards,
@@ -18,6 +19,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -32,6 +34,12 @@ export class UpdateCampaignController {
   constructor(private readonly updateCampaignService: UpdateCampaignService) {}
 
   @Patch(':id')
+  @ApiParam({
+    name: 'id',
+    description: 'ID of the campaign to update.',
+    type: String,
+    format: 'uuid',
+  })
   @ApiOperation({
     summary: 'Campaign update',
     description: 'manager can update campaigns',
@@ -43,11 +51,11 @@ export class UpdateCampaignController {
   @ApiForbiddenResponse({
     description: 'Only the manager who owns the campaign can update it.',
   })
-  @ApiBadRequestResponse({
-    description: 'Invalid campaign data or dates.',
-  })
   @ApiNotFoundResponse({
     description: 'Campaign or manager not found.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid campaign ID format, data, or dates.',
   })
   @ApiOkResponse({
     description: 'Campaign updated successfully.',
@@ -56,7 +64,7 @@ export class UpdateCampaignController {
   async updateCampaign(
     @Body() data: UpdateCampaignDTO,
     @Req() req: AuthenticatedRequest,
-    @Param('id') campaignId: string,
+    @Param('id', ParseUUIDPipe) campaignId: string,
   ) {
     return this.updateCampaignService.updateCampaign(campaignId, req.user.id, data);
   }

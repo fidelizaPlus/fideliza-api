@@ -91,6 +91,19 @@ export class InMemoryCampaignRepository implements ICampaignRepository {
     return campaign;
   }
 
+  async updateCampaignStatus(campaignId: string, status: Status) {
+    const index = this.items.findIndex((item) => item.id === campaignId);
+
+    if (index === -1) throw new CampaignNotFound();
+
+    this.items[index] = {
+      ...this.items[index],
+      status,
+    };
+
+    return this.items[index];
+  }
+
   async deleteCampaign(id: string) {
     const index = this.items.findIndex((item) => item.id === id);
 
